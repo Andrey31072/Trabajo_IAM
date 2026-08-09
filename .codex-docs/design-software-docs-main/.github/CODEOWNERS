@@ -1,0 +1,67 @@
+# CODEOWNERS — design-software-docs
+#
+# Cada sección tiene un equipo responsable de revisar y aprobar PRs.
+# El equipo listado aquí es el revisor OBLIGATORIO para cambios en esa ruta.
+# Sintaxis: <patron> @<owner>
+#
+# Reemplazar los placeholders con los handles reales de GitHub/GitLab del equipo.
+# Un PR solo puede hacer merge cuando el owner de la sección aprueba.
+
+# Catch-all — cualquier archivo sin owner específico requiere revisión de arquitectura
+*                               @equipo-arquitectura
+
+# Governance — responsabilidad de arquitectura
+/00-governance/         @equipo-arquitectura
+/.github/               @equipo-arquitectura
+/CONTRIBUTING.md        @equipo-arquitectura
+
+# Contexto y dominio — responsabilidad compartida arquitectura + producto
+/01-context/            @equipo-producto @equipo-arquitectura
+/02-domain/             @equipo-arquitectura @equipo-backend
+
+# Producto — responsabilidad de producto
+/03-product/            @equipo-producto
+
+# Requisitos — responsabilidad de análisis/producto
+/04-requirements/       @equipo-producto @equipo-analisis
+
+# Arquitectura y decisiones — responsabilidad de arquitectura
+/05-architecture/       @equipo-arquitectura
+
+# Datos — responsabilidad de datos/backend
+/06-data/               @equipo-datos @equipo-backend
+
+# API — responsabilidad de arquitectura + backend
+/07-api/                @equipo-arquitectura @equipo-backend
+
+# UML — responsabilidad de quien genera el diagrama (sección de origen)
+# Los PRs de diagramas deben ser aprobados por el owner de la sección de contenido.
+/08-uml/                @equipo-arquitectura
+
+# Microservicios — responsabilidad del equipo dueño de cada servicio
+/09-microservices/      @equipo-backend
+/09-microservices/service-catalog.md    @equipo-arquitectura
+
+# DevOps — responsabilidad de DevOps/infraestructura
+/10-devops/             @equipo-devops
+
+# Calidad — responsabilidad de calidad/QA
+/11-quality/            @equipo-calidad
+
+# UX/UI — responsabilidad de diseño
+/12-ux-ui/              @equipo-uxui
+
+# Operaciones — responsabilidad de DevOps/operaciones
+/13-operations/         @equipo-devops @equipo-operaciones
+
+# Entrenamiento — responsabilidad compartida soporte + producto
+/14-training/           @equipo-soporte @equipo-producto
+
+# Control de proyecto — responsabilidad de arquitectura + gestión
+/15-project-control/    @equipo-arquitectura @equipo-gestion
+
+# Archivo — solo arquitectura puede archivar/restaurar documentos
+/99-archive/            @equipo-arquitectura
+
+# Assets globales
+/assets/                @equipo-arquitectura

@@ -1,0 +1,77 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: iam-postgres
+    environment:
+      POSTGRES_DB: iam_db
+      POSTGRES_USER: iam_app
+      POSTGRES_PASSWORD: iam_app_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - iam-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U iam_app -d iam_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  liquibase-iam:
+    image: liquibase/liquibase:4.29
+    container_name: iam-liquibase
+    depends_on:
+      postgres:
+        condition: service_healthy
+    working_dir: /liquibase/workspace
+    volumes:
+      - ${IAM_DB_DIR:-./design-software-iam-db-main}:/liquibase/workspace:ro
+    command:
+      - --url=jdbc:postgresql://postgres:5432/iam_db
+      - --username=iam_app
+      - --password=iam_app_password
+      - --changeLogFile=changelog/changelog-master.yaml
+      - update
+
+  iam-api:
+    build:
+      context: ./backend
+    container_name: iam-api
+    depends_on:
+      liquibase-iam:
+        condition: service_completed_successfully
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgres://iam_app:iam_app_password@postgres:5432/iam_db
+      CORS_ORIGIN: http://localhost:8080,http://127.0.0.1:8080
+      JWT_ISSUER: sena-iam-service
+      APP_PUBLIC_URL: ${APP_PUBLIC_URL:-http://localhost:8080}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      EMAIL_FROM: ${EMAIL_FROM:-}
+      EMAIL_DELIVERY_REQUIRED: ${EMAIL_DELIVERY_REQUIRED:-false}
+      DEMO_PASSWORD: Demo2026!
+      DEMO_TRAINING_CENTER_ID: 11111111-1111-1111-1111-111111111111
+    ports:
+      - "3001:3000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  iam-frontend:
+    build:
+      context: ./frontend
+    container_name: iam-frontend
+    depends_on:
+      iam-api:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+
+volumes:
+  iam-postgres-data:
+

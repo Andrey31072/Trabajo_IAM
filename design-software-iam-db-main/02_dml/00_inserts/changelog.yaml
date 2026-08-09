@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: seed-rbac-001
+      author: jesus-gonzalez
+      labels: "seed,rbac"
+      comment: Seed RBAC (modules, features, roles, role_feature) desde rbac-design.md
+      changes:
+        - sqlFile:
+            path: 001_seed_rbac.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/02_dml/00_inserts/001_seed_rbac.rollback.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: seed-demo-iam-001
+      author: jesus-gonzalez
+      labels: "seed,demo"
+      comment: Demo - usuario SYSTEM_ADMIN inicial y su rol
+      changes:
+        - sqlFile: {path: 002_seed_demo.sql, relativeToChangelogFile: true, splitStatements: true, stripComments: false}
+      rollback:
+        - sql: {sql: "DELETE FROM rbac.user_role WHERE user_id='c0000000-0000-0000-0000-000000000001'; DELETE FROM identity.\"user\" WHERE id='c0000000-0000-0000-0000-000000000001';"}
+  - changeSet:
+      id: remediation-iam-961
+      author: jesus-gonzalez
+      labels: "remediation,congruence,rbac,v2"
+      comment: "R3.1: agrega las 8 features que el contrato exige y el seed no tenia (*_REPORT_VIEW, MON_CATALOG_MANAGE, MON_NOTIFICATION_VIEW, DOC_TEMPLATE_VIEW) + asignacion a roles. Idempotente"
+      changes:
+        - sqlFile: {path: 003_seed_missing_features.sql, relativeToChangelogFile: true, splitStatements: true, stripComments: false}
+      rollback:
+        - sqlFile: {path: ../../05_rollbacks/02_dml/00_inserts/003_seed_missing_features.rollback.sql, relativeToChangelogFile: true, stripComments: false}
